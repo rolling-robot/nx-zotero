@@ -21,6 +21,6 @@ Otherwise it will break all the config loading."
 Default keybinding to save the page to zotero is *C-c z* for emacs mode. For other modes the key should be defined in config.lisp.
 
 * License
-GPL3
+Apache-2.0
 
 
