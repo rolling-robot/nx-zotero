@@ -1,0 +1,9 @@
+#+title: nx-zotero-mode
+#+author: Petr Mukhachev
+
+This is a simple zotero connector for nyxt browser.
+
+*** License
+
+GPL3
+
