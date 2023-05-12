@@ -53,11 +53,11 @@
     (json:decode-json-from-string (flexi-streams:octets-to-string body))))
 
 (defun detect (buffer)
-  (let ((page-source (nyxt/document-mode:get-url-source (nyxt:url buffer))))
+  (let ((page-source (nyxt/mode/document:get-url-source (nyxt:url buffer))))
     (api-detect (nyxt:url buffer) page-source nil)))
 
 (defun save-buffer (buffer)
-  (let ((page-source (nyxt/document-mode:get-url-source (nyxt:url buffer))))
+  (let ((page-source (nyxt/mode/document:get-url-source (nyxt:url buffer))))
     (api-save-page (nyxt:url buffer) page-source nil nil)))
 
 (define-command save-current ()

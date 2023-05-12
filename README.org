@@ -12,7 +12,7 @@ git clone https://github.com/rolling-robot/nyxt-zotero ~/.local/share/nyxt/exten
 To load the extension, add the following to your config.lisp:
 #+begin_src lisp
 (nyxt:define-nyxt-user-system-and-load "nyxt-user/nx-zotero-mode-proxy"
-  :description "This proxy system saves us if nx-fruit fails to load.
+  :description "This proxy system saves us if nx-zotero fails to load.
 Otherwise it will break all the config loading."
   :depends-on ("nx-zotero-mode"))
 #+end_src
