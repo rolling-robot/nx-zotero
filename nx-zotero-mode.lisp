@@ -29,12 +29,26 @@
       (drakma:http-request "http://localhost:23119/connector/savePage"
                            :method :post
                            :content-type "application/json"
-                           :content (json:encode-json-to-string (list
-                                                                 (cons 'html html)
-                                                                 (cons 'uri (quri:render-uri url))
-                                                                 (cons 'cookie cookie)
-                                                                 (cons 'translator-id translator-id))))
-    (json:decode-json-from-string (flexi-streams:octets-to-string body))))
+                           :content (njson:encode (list
+                                                   (cons 'html html)
+                                                   (cons 'uri (quri:render-uri url))
+                                                   (cons 'cookie cookie)
+                                                   (cons 'translator-+id+ translator-id))))
+;    (echo (format nil "Received: ~a" (flexi-streams:octets-to-string body)))
+    (values (njson:decode (flexi-streams:octets-to-string body)) status)))
+
+(defun api-select-items (selected-items instance-id)
+  (let ((content (njson:encode (list
+                                (cons 'selected-items (loop for item in selected-items
+                                                            collect (cons (url item) (name item))))
+                                (cons 'instance-+ID+ instance-id)))))
+;    (echo (format nil "Sending ~a" content))
+    (multiple-value-bind (body status)
+        (drakma:http-request "http://localhost:23119/connector/selectItems"
+                             :method :post
+                             :content-type "application/json"
+                             :content content)
+      status)))
 
 (defun api-ping ()
     (drakma:http-request "http://localhost:23119/connector/ping"
@@ -45,20 +59,54 @@
       (drakma:http-request "http://localhost:23119/connector/detect"
                            :method :post
                            :content-type "application/json"
-                           :content (json:encode-json-to-string (list
-                                                                 (cons 'html html)
-                                                                 (cons 'uri (quri:render-uri url))
-                                                                 (cons 'cookie cookie)))
+                           :content (njson:encode (list
+                                                   (cons 'html html)
+                                                   (cons 'uri (quri:render-uri url))
+                                                   (cons 'cookie cookie)))
                            )
-    (json:decode-json-from-string (flexi-streams:octets-to-string body))))
+    (njson:decode (flexi-streams:octets-to-string body))))
 
 (defun detect (buffer)
   (let ((page-source (nyxt/mode/document:get-url-source (nyxt:url buffer))))
     (api-detect (nyxt:url buffer) page-source nil)))
 
-(defun save-buffer (buffer)
+(defun select-items (items)
+  (format t "~a" items))
+
+(defun zotero-send-buffer (buffer)
   (let ((page-source (nyxt/mode/document:get-url-source (nyxt:url buffer))))
     (api-save-page (nyxt:url buffer) page-source nil nil)))
 
+(define-class zotero-option ()
+  ((name :initarg :name :accessor name)
+   (url :initarg :url :accessor url)))
+
+(defmethod prompter:object-attributes ((option zotero-option) (source prompter:source))
+  (declare (ignore source))
+  `(("Name" ,(name option))))
+
+(define-class zotero-selection-source (prompter:source)
+  ((prompter:name "Detected items")))
+
+(defun select-one (options)
+  (prompt :prompt "Select which item to save"
+          :sources (make-instance 'zotero-selection-source
+                                  :name (format nil "Detected items at ~a" (njson:jget "uri" options))
+                                  :constructor (let ((items (njson:jget "selectItems" options)))
+                                                 (loop for url in (njson:jkeys items)
+                                                       collect (make-instance 'zotero-option :name (njson:jget url items) :url url))))))
+
 (define-command save-current ()
-  (save-buffer (nyxt:current-buffer)))
+  (multiple-value-bind (ans status) (zotero-send-buffer (nyxt:current-buffer))
+    (let ((result
+            (case status
+              (300 (let ((selected (select-one ans)))
+;                     (echo (format nil "Selected ~a" ans))
+                     (api-select-items selected (njson:jget "instanceID" ans))))
+              (201 201)
+              ((t) status))))
+      (case result
+        (201 (echo (format nil "Success ~a" result)))
+        (500 (echo (format nil "Error ~a" result)))
+      )
+      result)))
