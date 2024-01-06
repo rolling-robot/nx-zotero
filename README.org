@@ -1,9 +1,14 @@
 #+title: nx-zotero-mode
 #+author: Petr Mukhachev
 
+#+DOWNLOAD: https://github.com/rolling-robot/nx-zotero
+#+REPORTS: https://github.com/rolling-robot/nx-zotero/issues
+#+CONTRIBUTING: https://github.com/rolling-robot/nx-zotero
+
 This is a simple zotero connector for nyxt browser.
 
 * Installation
+
 First clone the repo somewhere where nyxt can find it, e.g. =~/.local/share/nyxt/extensions/=:
 #+begin_src shell
 git clone https://github.com/rolling-robot/nx-zotero ~/.local/share/nyxt/extensions/nx-zotero
@@ -26,6 +31,8 @@ To enable zotero mode for all web pages that you visit, you can add the followin
 #+end_src
 
 Default keybinding to save the page to zotero is *C-c z* for emacs mode.
+
+* Configuration
 
 For other modes the key should be defined in config.lisp as per [[https://nyxt.atlas.engineer/documentation#keybinding-configuration][nyxt documentation]], e.g.
 #+begin_src lisp
