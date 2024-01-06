@@ -53,9 +53,12 @@
       status)))
 
 (defun api-ping ()
-  "Ping zotero api"
-  (drakma:http-request "http://localhost:23119/connector/ping"
-                       :method :get))
+  "Ping zotero api. Returns status returned by api or throws a condition usocket:timeout-error"
+  (multiple-value-bind (ans status)
+      (drakma:http-request "http://localhost:23119/connector/ping"
+                           :method :get
+                           :connection-timeout 0.1)
+    status))
 
 (defun api-detect (url html cookie)
   "\"Detect\" endpoint detects whether there is an available translator
@@ -103,16 +106,20 @@ to handle a given page. Returns a list of available translators as a list."
 (define-command save-current ()
   "Sends current buffer to zotero api and handles the result: in case
 there are multiple papers to save, provides an interface to select one of them"
-  (multiple-value-bind (ans status) (zotero-send-buffer (nyxt:current-buffer))
-    (let ((result
-            (case status
-              (300 (let ((selected (select-one ans)))
-;                     (echo (format nil "Selected ~a" ans))
-                     (api-select-items selected (njson:jget "instanceID" ans))))
-              (201 201)
-              ((t) status))))
-      (case result
-        (201 (echo (format nil "Success ~a" result)))
-        (500 (echo (format nil "Error ~a" result)))
-      )
-      result)))
+  (if (handler-case (api-ping)
+        (usocket:timeout-error (var)
+                               nil))
+      (multiple-value-bind (ans status) (zotero-send-buffer (nyxt:current-buffer))
+        (let ((result
+               (case status
+                 (300 (let ((selected (select-one ans)))  ;; Several items available. Select one.
+                        (api-select-items selected (njson:jget "instanceID" ans))))
+                 (201 201)
+                 ((t) status))))
+          (case result
+            (201 (echo (format nil "Success ~a" result)))
+            (500 (echo (format nil "Error ~a" result)))
+            )
+          result))
+    (echo "Ping timeout. Check that Zotero is running.")
+    ))
