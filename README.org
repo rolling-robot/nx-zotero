@@ -4,9 +4,9 @@
 This is a simple zotero connector for nyxt browser.
 
 * Installation
-First clone the repo somewhere where nyxt can find it:
+First clone the repo somewhere where nyxt can find it, e.g. =~/.local/share/nyxt/extensions/=:
 #+begin_src shell
-git clone https://github.com/rolling-robot/nyxt-zotero ~/.local/share/nyxt/extensions/nx-zotero
+git clone https://github.com/rolling-robot/nx-zotero ~/.local/share/nyxt/extensions/nx-zotero
 #+end_src
 
 To load the extension, add the following to your config.lisp:
@@ -18,7 +18,41 @@ Otherwise it will break all the config loading."
 #+end_src
 
 * Usage
-Default keybinding to save the page to zotero is *C-c z* for emacs mode. For other modes the key should be defined in config.lisp.
+To enable zotero mode for all web pages that you visit, you can add the following to your =config.lisp=:
+#+begin_src lisp
+  (define-configuration web-buffer
+     ((default-modes
+       (pushnew 'zotero-mode %slot-value%))))
+#+end_src
+
+Default keybinding to save the page to zotero is *C-c z* for emacs mode.
+
+For other modes the key should be defined in config.lisp as per [[https://nyxt.atlas.engineer/documentation#keybinding-configuration][nyxt documentation]], e.g.
+#+begin_src lisp
+  (defvar *my-emacs-keymap* (make-keymap "my-emacs-map"))
+  (defvar *my-vi-keymap* (make-keymap "my-vi-map"))
+
+  (define-key *my-emacs-keymap* "C-c z" 'nx-zotero-mode:save-current)
+  (define-key *my-vi-keymap* "y z" 'nx-zotero-mode:save-current)
+
+  (define-mode my-mode
+               nil
+               "Dummy mode for the custom key bindings in *my-keymap*."
+               ((keyscheme-map
+                 (nkeymaps/core:make-keyscheme-map nyxt/keyscheme:emacs *my-emacs-keymap*
+                                                   nyxt/keyscheme:vi-normal *my-vi-keymap*)
+                 )))
+
+  (define-configuration web-buffer
+                        "Enable this mode by default."
+                        ((default-modes (pushnew 'my-mode %slot-value%))))
+#+end_src
+
+
+* Development and implementation
+This extension provides nyxt interface to [[https://www.zotero.org/support/dev/client_coding/connector_http_server][Zotero connector HTTP server]], which performs all of the heavy lifting.
+
+Currently implemented functionality includes sending the page to zotero and choosing one of the sources for saving in case of multiple choice.
 
 * License
 Apache-2.0
