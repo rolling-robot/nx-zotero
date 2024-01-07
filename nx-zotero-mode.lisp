@@ -21,7 +21,7 @@
    (keyscheme-map
     (define-keyscheme-map "zotero-mode" ()
       nyxt/keyscheme:emacs
-      (list "C-c z" 'save-current)))
+      (list "C-c z" 'zotero-save-current)))
    ))
 
 (defun api-save-page (url html cookie translator-id)
@@ -103,7 +103,7 @@ to handle a given page. Returns a list of available translators as a list."
                                                  (loop for url in (njson:jkeys items)
                                                        collect (make-instance 'zotero-option :name (njson:jget url items) :url url))))))
 
-(define-command save-current ()
+(define-command zotero-save-current ()
   "Sends current buffer to zotero api and handles the result: in case
 there are multiple papers to save, provides an interface to select one of them"
   (if (handler-case (api-ping)

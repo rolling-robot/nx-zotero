@@ -20,5 +20,5 @@
                 #:define-command
                 #:search-engine
                 )
-  (:export #:save-current)
+  (:export #:zotero-save-current)
   (:documentation "A mode for extracting metadata from a web page and sending it to zotero."))
