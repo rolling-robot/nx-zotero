@@ -11,7 +11,7 @@
 ;; limitations under the License.
 
 
-(nyxt:define-package #:nx-zotero-mode
+(nyxt:define-package #:nx-zotero
   (:use #:cl)
   (:import-from #:nyxt
                 #:current-buffer
@@ -21,4 +21,4 @@
                 #:search-engine
                 )
   (:export #:zotero-save-current)
-  (:documentation "A mode for extracting metadata from a web page and sending it to zotero."))
+  (:documentation "Provides nx-zotero-mode for extracting metadata from a web page and sending it to zotero."))

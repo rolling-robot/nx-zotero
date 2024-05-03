@@ -1,4 +1,4 @@
-;;;; nx-zotero-mode.lisp
+;;;; nx-zotero.lisp
 ;; Copyright 2023 Petr Mukhachev
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
@@ -11,7 +11,7 @@
 ;; limitations under the License.
 
 
-(in-package #:nx-zotero-mode)
+(in-package #:nx-zotero)
 
 (define-mode zotero-mode ()
   "A mode for extracting metadata from a web page and sending it to zotero."
@@ -66,7 +66,7 @@
 
 (defun current-zotero-mode ()
   "Return `zotero-mode' if it's active in the current buffer."
-  (alex:when-let ((mode (sym:resolve-symbol :zotero-mode :mode '(:nx-zotero-mode))))
+  (alex:when-let ((mode (sym:resolve-symbol :zotero-mode :mode '(:nx-zotero))))
     (find-submode mode)))
 
 (defun ping-p ()

@@ -1,4 +1,4 @@
-#+title: nx-zotero-mode
+#+title: nx-zotero
 #+author: Petr Mukhachev
 
 #+DOWNLOAD: https://github.com/rolling-robot/nx-zotero
@@ -16,10 +16,10 @@ git clone https://github.com/rolling-robot/nx-zotero ~/.local/share/nyxt/extensi
 
 To load the extension, add the following to your config.lisp:
 #+begin_src lisp
-(nyxt:define-nyxt-user-system-and-load "nyxt-user/nx-zotero-mode-proxy"
+(nyxt:define-nyxt-user-system-and-load "nyxt-user/nx-zotero-proxy"
   :description "This proxy system saves us if nx-zotero fails to load.
 Otherwise it will break all the config loading."
-  :depends-on ("nx-zotero-mode"))
+  :depends-on ("nx-zotero"))
 #+end_src
 
 * Usage
@@ -39,8 +39,8 @@ For other modes the key should be defined in config.lisp as per [[https://nyxt.a
   (defvar *my-emacs-keymap* (make-keymap "my-emacs-map"))
   (defvar *my-vi-keymap* (make-keymap "my-vi-map"))
 
-  (define-key *my-emacs-keymap* "C-c z" 'nx-zotero-mode:save-current)
-  (define-key *my-vi-keymap* "y z" 'nx-zotero-mode:save-current)
+  (define-key *my-emacs-keymap* "C-c z" 'nx-zotero:save-current)
+  (define-key *my-vi-keymap* "y z" 'nx-zotero:save-current)
 
   (define-mode my-mode
                nil

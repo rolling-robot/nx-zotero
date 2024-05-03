@@ -1,4 +1,4 @@
-;;;; nx-zotero-mode.asd
+;;;; nx-zotero.asd
 ;; Copyright 2023 Petr Mukhachev
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
@@ -10,12 +10,12 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-(asdf:defsystem #:nx-zotero-mode
+(asdf:defsystem #:nx-zotero
   :description "A mode for extracting metadata from a web page and sending it to zotero."
   :author "Petr Mukhachev"
   :license  "Apache-2.0"
-  :version "0.0.1"
+  :version "0.1"
   :serial t
   :depends-on (#:nyxt)
   :components ((:file "package")
-               (:file "nx-zotero-mode")))
+               (:file "nx-zotero")))
